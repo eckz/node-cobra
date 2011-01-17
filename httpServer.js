@@ -1,6 +1,7 @@
 var nodeHttp = require('http');
 var nodeUrl = require('url');
 var nodeUtil = require('util');
+var nodeQuerystring = require('querystring');
 
 /*
  * Wrapper for request and response
@@ -13,6 +14,17 @@ var HttpContext = function(server, req, res){
 	this.statusCode = 200;
 	this.statusPhrase = '';
 	this.url = req.url;
+	
+	var parsedUrl = nodeUrl.parse(this.url, true);
+	
+	this.location =  parsedUrl.pathname;
+	if(parsedUrl.query) {
+		this.query = nodeQuerystring.parse(parsedUrl.query);
+	} else {
+		this.query = {};
+	}
+	
+	this.virtualServer = this.request.headers.Host;
 	
 	this.config = {};
 };
@@ -27,120 +39,33 @@ HttpContext.prototype = {
 	removeHeader: function(h) {
 		delete this.headers[h];
 	},
+	addConfig: function(c) {
+		this.config.extend(c);
+	},
 	write: function() {
 		this.response.write.apply(this.response, arguments);
 	},
 	end: function() {
 		this.response.end.apply(this.response, arguments);
-	}
-}
-
-var ModuleDispatcher = function(modules){
-	this.modules = [];
-	this.modules.push.apply(this.modules, modules);
-};
-
-ModuleDispatcher.prototype.dispatch = function(method, args, callback) {
-	this.method = method;
-	this.args = args;
-	this.callback = callback;
-	this.result = 'undispatched';
-	
-	this.dispatchNext();
-};
-
-ModuleDispatcher.prototype.dispatchNext = function() {
-	if(this.modules.length == 0) {
-		this.finishDispatch();
-	}
-	var module = this.modules.shift();
-	var result = null;
-	var callable = module[this.method];
-	
-	if(typeof(callable) === 'function') {
-		
-		console.log('executing',this.method,'in',module.name,'module');
-		
-		var res = callable.apply(this, this.args);
-		
-		this.result = 'res';
-	}
-	
-	if(this.result != 'undispatched') {
-		this.finishDispatch();
+	},
+	error: function() {
+		var args = [];
+		args.push(this);
+		args.push.apply(args, arguments);
+		this.server._error.apply(this.server, args);
 	}
 };
 
-ModuleDispatcher.prototype.finishDispatch = function() {
-	this.callback.call(null, this.result);
-}
-
-var HttpServer = function(){};
+var HttpServer = function(){
+	HttpServer.super_.call(this);
+	this.config = {};
+};
 
 exports.HttpServer = HttpServer;
 
-nodeUtil.inherits(HttpServer, require('events').EventEmitter);
+nodeUtil.inherits(HttpServer, require('./modulesContainer').ModulesContainer);
 
 var proto = HttpServer.prototype;
-
-proto.contructor = function(config) {
-	HttpServer.super_.call(this);
-	
-	this._runModules('init', this);
-}
-
-proto._modules = [];
-proto._modulesMap = [];
-
-proto.addModule = function(mod, priority) {
-	if(priority === undefined) {
-		priority = 0;
-	}
-	this._modulesMap.push({module:mod, priority: priority});
-	this._reorderModules();
-}
-
-proto._reorderModules = function() {
-	this._modulesMap.sort(function(a,b) {
-		a = a.priority;
-		b = b.priority;
-		return a - b;
-	});
-	this._modules = this._modulesMap.map(function(m) { return m.module; });
-}
-
-proto._runModules = function() {
-	var args = [];
-	args.push.apply(args, arguments);
-	
-	var method = args.shift();
-	
-	var result = 'undispatched';
-	
-	this._modules.forEach(function(mod) {
-		var m = mod[method];
-		
-		if(typeof(m) === 'function') {
-			
-			console.log('executing',method,'in',mod.name,'module');
-			
-			var res = m.apply(mod, args);
-			
-			if(res === 'dispatched') {
-				// break the loop
-				result = 'dispatched';
-				return false;
-			}
-		}
-	});
-	return result;
-}
-
-proto.__defineSetter__('documentRoot', function(v) {
-	v = path.resolve(v);
-	this._documentRoot = v + '/';
-	console.log('DocumentRoot:', this._documentRoot);
-});
 
 proto.defaultHeaders = {
 	'Content-Type': 'text/html; charset=utf-8',
@@ -154,19 +79,23 @@ proto.listenOn = function() {
 	console.log('Listening on', arguments[0]);
 };
 
+proto.addConfig = function(c) {
+	this.config.extend(c);
+},
+
 proto.dispatch = function(req, res) {
 	var context = new HttpContext(this,req,res);
+	
+	context.addConfig(this.config);
 	
 	context.addHeaders(this.defaultHeaders);
 	context.addHeaders({'Date': new Date().toUTCString()});
 	
-	var dispatcher = new ModuleDispatcher(this._modules);
-	
-	dispatcher.dispatch('request', [context], function(result) {
+	this.triggerHook('request', [context], function(result) {
 		if(result === 'undispatched') {
 			this._error(context, 505, 'Undispatched request');
 		}
-	});
+	}.bind(this));
 	
 };
 
@@ -192,6 +121,10 @@ proto._error = function(context, code, msg, extra) {
 	if(extra) {
 		w('<p>'); w(extra); w('</p>');
 	}
+	
+	w('<p><h3>Configuration:</h3><code>');
+	w(JSON.stringify(context.config));
+	w('</code></p>');
 	
 	w('</body></html>');
 	

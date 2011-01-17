@@ -1,22 +1,27 @@
-var path = require('path');
-var fs = require('fs');
+var nodePath = require('path');
+var nodeFs = require('fs');
 
 exports.name = 'FileModule';
 
-exports.request = function(context) {
-	var url = context.url;
-	var reqPath = context.config.documentRoot + url;
+exports.request = function(context, dispatcher) {
+	if(!context.config.documentRoot) {
+		context.error(505, 'Misconfiguration', 'documentRoot is not set');
+		return 'dispatched';
+	}
 	
-	console.log('REQUEST: ' + url);
-
-	path.exists(reqPath, function(exists) {
+	var path = context.config.documentRoot + context.location;
+	
+	console.log('Requesting', path);
+	
+	nodePath.exists(path, function(exists) {
 		if(!exists) {
-			context.server._error(context, 404, 'Not Found', 'File <code>' + url + '</code> not found.');
-		} else {
-		
-			console.log('dispatching file', reqPath);
-			var readStream = fs.createReadStream(reqPath, {flags: 'r'});
+			context.error(404, 'Not Found', 'File <code>' + context.location + '</code> not found.');
 			
+			dispatcher.dispatchNext('dispatched');
+		} else {
+			var readStream = nodeFs.createReadStream(path, {flags: 'r'});
+			
+			context.addHeaders({'Content-Type': 'application/octet-stream'});
 			context.writeHeaders();
 			
 			readStream.on('data', function(data) {
@@ -25,9 +30,10 @@ exports.request = function(context) {
 			
 			readStream.on('end', function() {
 				context.end();
+				dispatcher.dispatchNext('dispatched');
 			});
 		}
 	}.bind(this));
 	
-	return 'dispatched';
-}
+	return 'async-dispatch';
+};
