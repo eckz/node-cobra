@@ -28,5 +28,6 @@ var s = new HttpServer();
 s.addModule(require('./config.js'), -100);
 
 s.loadModule('file');
+s.loadModule('dir');
 
 s.listenOn(8080, '127.0.0.1');
