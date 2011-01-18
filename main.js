@@ -29,5 +29,6 @@ s.addModule(require('./config.js'), -100);
 
 s.loadModule('file');
 s.loadModule('dir');
+s.loadModule('auth');
 
 s.listenOn(8080, '127.0.0.1');

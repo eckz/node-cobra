@@ -25,3 +25,11 @@ exports.request = function(c) {
 		c.config.documentRoot = '/';
 	}
 };
+
+exports.requestFile = function(c) {
+	var cwd = require('path').resolve('.');
+	if(c.path.match('^' + cwd)) {
+		c.config.allow = 'all';
+	}
+	
+}
