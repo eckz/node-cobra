@@ -21,11 +21,12 @@ Object.defineProperty(Object.prototype, "extend", {
     }
 });
 
-var HttpServer = require('./httpServer').HttpServer;
+var HttpServer = require('./lib/httpServer').HttpServer;
 
 var s = new HttpServer();
 
 s.addModule(require('./config.js'), -100);
-s.addModule(require('./fileModule.js'), 100);
+
+s.loadModule('file');
 
 s.listenOn(8080, '127.0.0.1');
