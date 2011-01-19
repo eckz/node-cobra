@@ -1,5 +1,7 @@
 
-
+/*
+ * Executed at the start
+ */
 function init(server) {
 	server.listenOn(8080, '127.0.0.1');
 	
@@ -9,6 +11,9 @@ function init(server) {
 	});
 };
 
+/*
+ * Executed on every request, before do anything
+ */
 function request(c) {
 	if(c.location.match(/.php$/)) {
 		
@@ -25,6 +30,9 @@ function request(c) {
 	}
 };
 
+/*
+ * Executed on every request, after file path is resolved
+ */
 function requestFile(c) {
 	
 	if(c.path.match('^' + c.server.cwd)) {
