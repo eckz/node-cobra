@@ -25,10 +25,10 @@ var HttpServer = require('./lib/httpServer').HttpServer;
 
 var s = new HttpServer();
 
-s.addModule(require('./config.js'), -100);
-
+s.loadModule('config');
 s.loadModule('file');
 s.loadModule('dir');
 s.loadModule('auth');
 
-s.listenOn(8080, '127.0.0.1');
+s.loadConfig('./config.js');
+

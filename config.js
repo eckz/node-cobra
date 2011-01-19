@@ -1,14 +1,15 @@
 
-exports.name = 'Config';
 
-exports.init = function(server) {
+function init(server) {
+	server.listenOn(8080, '127.0.0.1');
+	
 	server.addConfig({
 		'documentRoot': '.',
 		'indexDirectory': true
 	});
 };
 
-exports.request = function(c) {
+function request(c) {
 	if(c.location.match(/.php$/)) {
 		
 	}
@@ -19,16 +20,14 @@ exports.request = function(c) {
 		});
 	}
 	
-	console.log('VirtualHost', c.virtualHost);
-	
 	if(c.virtualHost == '127.0.0.1:8080') {
 		c.config.documentRoot = '/';
 	}
 };
 
-exports.requestFile = function(c) {
-	var cwd = require('path').resolve('.');
-	if(c.path.match('^' + cwd)) {
+function requestFile(c) {
+	
+	if(c.path.match('^' + c.server.cwd)) {
 		c.config.allow = 'all';
 	}
 	
