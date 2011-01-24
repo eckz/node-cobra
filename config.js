@@ -8,7 +8,7 @@ function init(server) {
 	server.addConfig({
 		'documentRoot': '.',
 		'autoIndex': true,
-		'index': ['index.html', 'config.js']
+		'index': ['index.html']
 	});
 };
 
@@ -16,9 +16,6 @@ function init(server) {
  * Executed on every request, before do anything
  */
 function request(c) {
-	if(c.location.match(/.php$/)) {
-		
-	}
 	
 	if(c.virtualHost == '127.0.0.1:8080') {
 		c.config.documentRoot = '/';
@@ -32,6 +29,10 @@ function requestFile(c) {
 	
 	if(c.path.match('^' + c.server.cwd)) {
 		c.config.allow = 'all';
+	}
+	
+	if(c.path.match(/.php$/)) {
+		
 	}
 	
 }
