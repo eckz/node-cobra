@@ -29,7 +29,7 @@ var s = new HttpServer();
 
 s.loadModule('config');
 s.loadModule('file');
-s.loadModule('dir');
+s.loadModule('autoindex');
 s.loadModule('access');
 s.loadModule('mime');
 

@@ -7,7 +7,7 @@ function init(server) {
 	
 	server.addConfig({
 		'documentRoot': '.',
-		'indexDirectory': true
+		'autoIndex': true
 	});
 };
 
@@ -17,12 +17,6 @@ function init(server) {
 function request(c) {
 	if(c.location.match(/.php$/)) {
 		
-	}
-	
-	if(c.location.match(/^\/$/)) {
-		c.addConfig({
-			'indexDirectory': true
-		});
 	}
 	
 	if(c.virtualHost == '127.0.0.1:8080') {
