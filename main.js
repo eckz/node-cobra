@@ -30,7 +30,7 @@ var s = new HttpServer();
 s.loadModule('config');
 s.loadModule('file');
 s.loadModule('dir');
-s.loadModule('auth');
+s.loadModule('access');
 s.loadModule('mime');
 
 s.loadConfig('./config.js');
