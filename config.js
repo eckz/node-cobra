@@ -7,7 +7,8 @@ function init(server) {
 	
 	server.addConfig({
 		'documentRoot': '.',
-		'autoIndex': true
+		'autoIndex': true,
+		'index': ['index.html', 'config.js']
 	});
 };
 
