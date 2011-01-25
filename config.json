@@ -4,6 +4,7 @@
 	"documentRoot": ".",
 	"autoIndex": true,
 	"virtualhosts": {
-		"*" : {}
+		"*" : {
+		}
 	}
 }
