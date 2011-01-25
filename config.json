@@ -1,0 +1,9 @@
+{
+	"modules": ["file", "autoindex"],
+	"ports": [8080],
+	"documentRoot": ".",
+	"autoIndex": true,
+	"virtualhosts": {
+		"*" : {}
+	}
+}
