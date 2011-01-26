@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 require.paths.unshift('./lib/');
 require.paths.unshift('./lib/external/');
 
