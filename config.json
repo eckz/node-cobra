@@ -1,10 +1,31 @@
 {
-	"modules": ["file", "autoindex"],
+	"modules": ["file", "autoindex", "access"],
 	"ports": [8080],
 	"documentRoot": ".",
-	"autoIndex": true,
 	"virtualhosts": {
-		"*" : {
+		"localhost" : {
+			"locations": {
+				"/": {
+					"allow": "all"
+				}
+			}
+		},
+		"*": {
+			"deny": "all"
+		}
+	},
+	"locations": {
+		"/": {
+			"autoIndex": true
+		},
+		"/denied/": {
+			"deny": "all"
+		}
+	},
+	"directories": {
+		".": {
+			"allow": "127.0.0.1",
+			"deny": "all"
 		}
 	}
 }
