@@ -1,5 +1,5 @@
 {
-	"modules": ["file", "autoindex", "access"],
+	"modules": ["file", "indexes", "autoindex", "access"],
 	"ports": [8080],
 	"documentRoot": ".",
 	"virtualhosts": {
