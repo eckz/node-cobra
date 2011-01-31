@@ -1,5 +1,5 @@
 {
-	"modules": ["file", "indexes", "autoindex", "access"],
+	"modules": ["file", "indexes", "autoindex", "access", "redirect"],
 	"ports": [8080],
 	"documentRoot": ".",
 	"virtualhosts": {
@@ -11,7 +11,6 @@
 			}
 		},
 		"*": {
-			"deny": "all"
 		}
 	},
 	"locations": {
@@ -20,6 +19,9 @@
 		},
 		"/denied/": {
 			"deny": "all"
+		},
+		"/google": {
+			"redirect": "http://google.com"
 		}
 	},
 	"directories": {
