@@ -1,5 +1,5 @@
 {
-	"modules": ["file", "indexes", "autoindex", "access", "redirect"],
+	"modules": ["file", "indexes", "autoindex", "access", "redirect", "cgi"],
 	"ports": [8080],
 	"documentRoot": ".",
 	"virtualhosts": {
@@ -28,6 +28,10 @@
 		".": {
 			"allow": "127.0.0.1",
 			"deny": "all"
+		},
+		"./php/": {
+			"handler": "cgi",
+			"cgiScript": "php5-cgi"
 		}
 	}
 }
