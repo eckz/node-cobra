@@ -1,0 +1,2 @@
+<?php
+ non_exists();

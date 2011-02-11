@@ -11,10 +11,8 @@ var s = new HttpServer();
 s.loadModule('config');
 s.loadModule('configJSON');
 
-//s.loadModule('file');
-//s.loadModule('indexFiles');
-//s.loadModule('autoindex');
-//s.loadModule('access');
-//s.loadModule('mime');
+var configFiles = Array.prototype.slice.call(process.argv, 2);
 
-s.loadConfig('./config.json');
+configFiles.forEach( function(c) {
+	s.loadConfig(c);
+});

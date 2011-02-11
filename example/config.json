@@ -1,7 +1,7 @@
 {
 	"modules": ["file", "indexes", "autoindex", "access", "redirect", "cgi"],
 	"ports": [8080],
-	"documentRoot": ".",
+	"documentRoot": "./example/",
 	"virtualhosts": {
 		"localhost" : {
 			"locations": {
@@ -28,10 +28,12 @@
 		".": {
 			"allow": "127.0.0.1",
 			"deny": "all"
-		},
-		"./php/": {
+		}
+	},
+	"files": {
+		"~.php$": {
 			"handler": "cgi",
-			"cgiScript": "php5-cgi"
+			"cgiScript": "/usr/bin/php5-cgi"
 		}
 	}
 }
