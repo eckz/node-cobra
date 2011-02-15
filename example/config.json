@@ -1,5 +1,5 @@
 {
-	"modules": ["file", "indexes", "autoindex", "access", "redirect", "cgi"],
+	"modules": ["file", "mime", "indexes", "autoindex", "access", "redirect", "cgi"],
 	"ports": [8080],
 	"documentRoot": "./example/",
 	"virtualhosts": {
@@ -28,7 +28,14 @@
 		".": {
 			"allow": "127.0.0.1",
 			"deny": "all"
-		}
+		},
+    "./example/gitweb/": {
+      "files": {
+        "~.cgi": {
+          "handler": "cgi"
+        }
+      }
+    }
 	},
 	"files": {
 		"~.php$": {
